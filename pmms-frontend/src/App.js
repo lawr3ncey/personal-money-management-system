@@ -1,8 +1,11 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import "./dashboard.css";
 
 function App() {
   const [income, setIncome] = useState("");
   const [jars, setJars] = useState(null);
+  
+  const [jarsFromDb, setJarsFromDb] = useState([]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -41,6 +44,22 @@ function App() {
       }
   };
 
+   // ✅ Fetch data from DB
+  const fetchJarsFromDb = async () => {
+    try {
+      const res = await fetch("http://localhost/personal-money-management-system/pmms-backend/api/get_jars.php");
+      const data = await res.json();
+      setJarsFromDb(data.jars || []);
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
+  // ✅ Run once when app loads
+  useEffect(() => {
+    fetchJarsFromDb();
+  }, []);
+
   const handleSave = async () => {
     if (!jars) return alert("No jars to save!");
     
@@ -55,10 +74,12 @@ function App() {
     } catch (err) {
       console.error(err);
     }
+
+    fetchJarsFromDb();
   };
 
   return (
-    <div style={{ padding: 20 }}>
+    <div className="dashboard-container">
       <h1>Personal Money Management System (6 Jars)</h1>
       <form onSubmit={handleSubmit}>
         <input
@@ -84,6 +105,17 @@ function App() {
         <button onClick={handleSave}>Save to Database</button>
         </div>
       )}
+
+      <div style={{ marginTop: 40 }}>
+        <h3>Stored Jars from Database:</h3>
+        <ul>
+          {jarsFromDb.map(jar => (
+            <li key={jar.id}>
+              <p>Balance: ₱{Number(jar.balance).toFixed(2)}</p>
+            </li>
+          ))}
+        </ul>
+      </div>
     </div>
   );
 }
