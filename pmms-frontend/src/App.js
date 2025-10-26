@@ -13,6 +13,48 @@ function App() {
     });
     const data = await res.json();
     setJars(data.jars);
+
+    const incomeValue = parseFloat(e.target.income.value); // read input field value
+
+    console.log("Distribute button clicked!"); // ✅ Check if this appears
+    try {
+      const res = await fetch("http://localhost/personal-money-management-system/pmms-backend/api/distribute.php", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ income: incomeValue }),
+      })
+      
+      console.log("Response status:", res.status);
+
+      if (!res.ok) {
+        throw new Error('Network response was not ok');
+      }
+
+      const data = await res.json();
+      console.log("Backend response:", data);
+
+      // Example: if backend returns { jars: [...] }
+      if (data.jars) setJars(data.jars);
+    } 
+      catch (error) {
+        console.error("Error submitting:", error);
+      }
+  };
+
+  const handleSave = async () => {
+    if (!jars) return alert("No jars to save!");
+    
+    try {
+      const res = await fetch("http://localhost/personal-money-management-system/pmms-backend/api/save_jars.php", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ jars }),
+      });
+      const data = await res.json();
+      alert(data.message);
+    } catch (err) {
+      console.error(err);
+    }
   };
 
   return (
@@ -20,9 +62,9 @@ function App() {
       <h1>Personal Money Management System (6 Jars)</h1>
       <form onSubmit={handleSubmit}>
         <input
-          type="number"
+          type="number" 
           placeholder="Enter your income"
-          value={income}
+          name="income"
           onChange={(e) => setIncome(e.target.value)}
           style={{ marginRight: 10 }}
         />
@@ -30,6 +72,8 @@ function App() {
       </form>
 
       {jars && (
+        <div>
+          <h3>Distributed Amounts:</h3>
         <ul>
           {Object.entries(jars).map(([name, amount]) => (
             <li key={name}>
@@ -37,6 +81,8 @@ function App() {
             </li>
           ))}
         </ul>
+        <button onClick={handleSave}>Save to Database</button>
+        </div>
       )}
     </div>
   );
