@@ -6,7 +6,7 @@ function App() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    const res = await fetch("http://localhost/personal-money-management-system/backend/api/distribute.php", {
+    const res = await fetch("http://localhost/personal-money-management-system/pmms-backend/api/distribute.php", {
       method: "POST",
       headers: { "Content-Type": "application/x-www-form-urlencoded" },
       body: new URLSearchParams({ income }),
