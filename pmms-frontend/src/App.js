@@ -6,7 +6,7 @@ function App() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    const res = await fetch("http://localhost/personal-money-management-system/backend/api/distribute.php", {
+    const res = await fetch("http://localhost/personal-money-management-system/pmms-backend/api/distribute.php", {
       method: "POST",
       headers: { "Content-Type": "application/x-www-form-urlencoded" },
       body: new URLSearchParams({ income }),
@@ -20,7 +20,7 @@ function App() {
       <h1>Personal Money Management System (6 Jars)</h1>
       <form onSubmit={handleSubmit}>
         <input
-          type="number"
+          type="number" 
           placeholder="Enter your income"
           value={income}
           onChange={(e) => setIncome(e.target.value)}
