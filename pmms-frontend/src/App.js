@@ -71,6 +71,14 @@ function App() {
       });
       const data = await res.json();
       alert(data.message);
+
+
+       // ✅ Reset distributed jars to 0 after saving
+    setJars(Object.fromEntries(Object.keys(jars).map(key => [key, 0])));
+    setIncome("");   // Clears the input field
+    fetchJarsFromDb(); // Refresh jars from database
+
+    
     } catch (err) {
       console.error(err);
     }
@@ -79,42 +87,58 @@ function App() {
   };
 
   return (
-    <div className="dashboard-container">
-      <h1>Personal Money Management System (6 Jars)</h1>
-      <form onSubmit={handleSubmit}>
-        <input
-          type="number" 
-          placeholder="Enter your income"
-          name="income"
-          onChange={(e) => setIncome(e.target.value)}
-          style={{ marginRight: 10 }}
-        />
-        <button type="submit">Distribute</button>
-      </form>
+    <div>
+      <div className="dashboard-container text-center d-flex">
+        <h1 className="title">Personal Money Management (6 Jars)</h1>
+        <form className="income-form" onSubmit={handleSubmit}>
+          <input
+            type="number"
+            placeholder="Enter your income"
+            name="income"
+            onChange={(e) => setIncome(e.target.value)}
+          />
+          <button type="submit">Distribute</button>
+        </form>
+      </div> 
+      
+      <div className="jars-results d-flex justify-content-center col-lg-12 gap-4 mt-5"> 
+        {jars && (
+          <div className="results-card glassy-card col-lg-3 text-center">
+            <h3>Distributed Amounts</h3>
+            <ul>
+              {Object.entries(jars).map(([name, amount]) => (
+                <li key={name}>
+                  <strong>{name}</strong>
+                  <span>₱{amount.toFixed(2)}</span>
+                </li>
+              ))}
+            </ul>
+            <button className="save-btn" onClick={handleSave}>Save to Database</button>
+          </div>
+        )}
 
-      {jars && (
         <div>
-          <h3>Distributed Amounts:</h3>
-        <ul>
-          {Object.entries(jars).map(([name, amount]) => (
-            <li key={name}>
-              <strong>{name}</strong>: ₱{amount.toFixed(2)}
-            </li>
-          ))}
-        </ul>
-        <button onClick={handleSave}>Save to Database</button>
+          <div className="db-card glassy-card col-lg-9 text-center">
+            <h3>Stored Jars from Database</h3>
+            <div className="jars-grid d-flex justify-content-center gap-4">
+              {jarsFromDb.map((jar) => (
+                <div key={jar.id} className="jar-card">
+                  <div className="jar-image-container">
+                    <img
+                      src={`/images/${jar.jar_name.toLowerCase().replace(/\s+/g, '-')}.png`}
+                      alt={jar.jar_name}
+                      className="jar-image"
+                    />
+                    <div className="jar-overlay">
+                      <span className="jar-amount">₱{Number(jar.amount).toFixed(2)}</span>
+                    </div>
+                  </div>
+                  
+                </div>
+              ))}
+            </div>
+          </div>
         </div>
-      )}
-
-      <div style={{ marginTop: 40 }}>
-        <h3>Stored Jars from Database:</h3>
-        <ul>
-          {jarsFromDb.map(jar => (
-            <li key={jar.id}>
-              <p>Balance: ₱{Number(jar.balance).toFixed(2)}</p>
-            </li>
-          ))}
-        </ul>
       </div>
     </div>
   );
