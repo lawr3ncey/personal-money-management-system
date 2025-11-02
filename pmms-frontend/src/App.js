@@ -1,7 +1,13 @@
 import { useState, useEffect } from "react";
 import "./dashboard.css";
+import 'bootstrap/dist/css/bootstrap.min.css';
+import Button from "react-bootstrap/Button";
+import Modal from "react-bootstrap/Modal";
 
 function App() {
+  const [modalShow, setModalShow] = useState(false);
+  const [selectedJar, setSelectedJar] = useState(null);
+
   const [income, setIncome] = useState("");
   const [jars, setJars] = useState(null);
   
@@ -86,6 +92,36 @@ function App() {
     fetchJarsFromDb();
   };
 
+
+
+  function MyJarModal({ show, onHide, jar }) {
+    // ✅ Prevent errors while jar is still null
+  if (!jar) return null;
+  return (
+    <Modal show={show} onHide={onHide} centered>
+      <Modal.Header closeButton>
+        <Modal.Title>{jar?.jar_name}</Modal.Title>
+      </Modal.Header>
+
+      <Modal.Body>
+        <img
+          src={`/images/${jar.jar_name.toLowerCase().replace(/\s+/g, '-')}.png`}
+          alt={jar.jar_name}
+          className="jar-image"
+        />
+        <h4>Amount: ₱{Number(jar?.amount).toFixed(2)}</h4>
+        <p>You can later add options like Edit/Add Money.</p>
+      </Modal.Body>
+
+      <Modal.Footer>
+        <Button variant="secondary" onClick={onHide}>Close</Button>
+      </Modal.Footer>
+    </Modal>
+  );
+}
+
+
+
   return (
     <div>
       <div className="dashboard-container text-center d-flex">
@@ -93,6 +129,7 @@ function App() {
         <form className="income-form" onSubmit={handleSubmit}>
           <input
             type="number"
+            step="0.01" // ✅ Allow decimal numbers
             placeholder="Enter your income"
             name="income"
             onChange={(e) => setIncome(e.target.value)}
@@ -122,7 +159,13 @@ function App() {
             <h3>Stored Jars from Database</h3>
             <div className="jars-grid d-flex justify-content-center gap-4">
               {jarsFromDb.map((jar) => (
-                <div key={jar.id} className="jar-card">
+                <div key={jar.id} className="jar-card"
+                  onClick={() => {
+                    setSelectedJar(jar);
+                    setModalShow(true);
+                    }}
+                    style={{ cursor: "pointer" }}
+                  >
                   <div className="jar-image-container">
                     <img
                       src={`/images/${jar.jar_name.toLowerCase().replace(/\s+/g, '-')}.png`}
@@ -131,9 +174,13 @@ function App() {
                     />
                     <div className="jar-overlay">
                       <span className="jar-amount">₱{Number(jar.amount).toFixed(2)}</span>
+                      <MyJarModal 
+                        show={modalShow} 
+                        onHide={() => setModalShow(false)} 
+                        jar={selectedJar} 
+                      />
                     </div>
                   </div>
-                  
                 </div>
               ))}
             </div>

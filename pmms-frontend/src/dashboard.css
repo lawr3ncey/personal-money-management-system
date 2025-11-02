@@ -147,3 +147,23 @@ p.jar-name {
   padding: 0px 374px;
   flex-direction: column;
 }
+
+.modal-backdrop {
+  background-color: #ffffff36 !important; 
+}
+
+.modal-content {
+  box-shadow: 5px 5px 15px 5px rgba(0,0,0,0.76);
+}
+
+.jar-card:hover {
+  background-color: rgba(24, 22, 22, 0.082);
+  border-radius: 15px;
+}
+
+.modal-body {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+}
