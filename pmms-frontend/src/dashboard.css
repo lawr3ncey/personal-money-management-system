@@ -148,12 +148,13 @@ p.jar-name {
   flex-direction: column;
 }
 
-.modal-backdrop {
+.fade.modal.show {
   background-color: #ffffff36 !important; 
 }
 
 .modal-content {
-  box-shadow: 5px 5px 15px 5px rgba(0,0,0,0.76);
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  border: 0 !important;
 }
 
 .jar-card:hover {
@@ -162,8 +163,16 @@ p.jar-name {
 }
 
 .modal-body {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    flex-direction: column;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+}
+
+h3.total-balance {
+  font-size: 20px;
+  font-weight: 900;
+  margin-top: 16px;
+  margin-bottom: 0px;
+  color: #4950577a;
 }

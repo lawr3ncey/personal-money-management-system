@@ -7,10 +7,8 @@ import Modal from "react-bootstrap/Modal";
 function App() {
   const [modalShow, setModalShow] = useState(false);
   const [selectedJar, setSelectedJar] = useState(null);
-
   const [income, setIncome] = useState("");
   const [jars, setJars] = useState(null);
-  
   const [jarsFromDb, setJarsFromDb] = useState([]);
 
   const handleSubmit = async (e) => {
@@ -24,7 +22,6 @@ function App() {
     setJars(data.jars);
 
     const incomeValue = parseFloat(e.target.income.value); // read input field value
-
     console.log("Distribute button clicked!"); // ✅ Check if this appears
     try {
       const res = await fetch("http://localhost/personal-money-management-system/pmms-backend/api/distribute.php", {
@@ -34,7 +31,6 @@ function App() {
       })
       
       console.log("Response status:", res.status);
-
       if (!res.ok) {
         throw new Error('Network response was not ok');
       }
@@ -45,12 +41,13 @@ function App() {
       // Example: if backend returns { jars: [...] }
       if (data.jars) setJars(data.jars);
     } 
-      catch (error) {
-        console.error("Error submitting:", error);
-      }
+    
+    catch (error) {
+      console.error("Error submitting:", error);
+    }
   };
 
-   // ✅ Fetch data from DB
+  // ✅ Fetch data from DB
   const fetchJarsFromDb = async () => {
     try {
       const res = await fetch("http://localhost/personal-money-management-system/pmms-backend/api/get_jars.php");
@@ -68,7 +65,6 @@ function App() {
 
   const handleSave = async () => {
     if (!jars) return alert("No jars to save!");
-    
     try {
       const res = await fetch("http://localhost/personal-money-management-system/pmms-backend/api/save_jars.php", {
         method: "POST",
@@ -78,49 +74,49 @@ function App() {
       const data = await res.json();
       alert(data.message);
 
-
        // ✅ Reset distributed jars to 0 after saving
     setJars(Object.fromEntries(Object.keys(jars).map(key => [key, 0])));
     setIncome("");   // Clears the input field
     fetchJarsFromDb(); // Refresh jars from database
 
-    
     } catch (err) {
       console.error(err);
     }
-
     fetchJarsFromDb();
   };
 
-
+  // Calculate total balance from database jars
+  const totalBalance = jarsFromDb.reduce((total, jar) => total + parseFloat(jar.amount), 0);
 
   function MyJarModal({ show, onHide, jar }) {
-    // ✅ Prevent errors while jar is still null
-  if (!jar) return null;
-  return (
-    <Modal show={show} onHide={onHide} centered>
-      <Modal.Header closeButton>
-        <Modal.Title>{jar?.jar_name}</Modal.Title>
-      </Modal.Header>
+    return (
+      <Modal show={show} onHide={onHide} centered>
+        <Modal.Header closeButton>
+          <Modal.Title>{jar?.jar_name || "Loading..."}</Modal.Title>
+        </Modal.Header>
 
-      <Modal.Body>
-        <img
-          src={`/images/${jar.jar_name.toLowerCase().replace(/\s+/g, '-')}.png`}
-          alt={jar.jar_name}
-          className="jar-image"
-        />
-        <h4>Amount: ₱{Number(jar?.amount).toFixed(2)}</h4>
-        <p>You can later add options like Edit/Add Money.</p>
-      </Modal.Body>
+        <Modal.Body>
+          {jar ? (
+            <>
+              <img
+                src={`/images/${jar.jar_name.toLowerCase().replace(/\s+/g, '-')}.png`}
+                alt={jar.jar_name}
+                className="jar-image"
+              />
+              <h4>Amount: ₱{Number(jar.amount).toFixed(2)}</h4>
+              <p>You can later add options like Edit/Add Money.</p>
+            </>
+          ) : (
+            <p>Loading...</p>
+          )}
+        </Modal.Body>
 
-      <Modal.Footer>
-        <Button variant="secondary" onClick={onHide}>Close</Button>
-      </Modal.Footer>
-    </Modal>
-  );
-}
-
-
+        <Modal.Footer>
+          <Button variant="secondary" onClick={onHide}>Close</Button>
+        </Modal.Footer>
+      </Modal>
+    );
+  }
 
   return (
     <div>
@@ -174,19 +170,22 @@ function App() {
                     />
                     <div className="jar-overlay">
                       <span className="jar-amount">₱{Number(jar.amount).toFixed(2)}</span>
-                      <MyJarModal 
-                        show={modalShow} 
-                        onHide={() => setModalShow(false)} 
-                        jar={selectedJar} 
-                      />
                     </div>
                   </div>
                 </div>
               ))}
             </div>
+            {/* ✅ Total Balance Display */}
+            <h3 className="total-balance">Total Balance</h3>
+            <div className="balance-amount">₱{totalBalance.toFixed(2)}</div>
           </div>
         </div>
       </div>
+        <MyJarModal 
+          show={modalShow} 
+          onHide={() => setModalShow(false)} 
+          jar={selectedJar} 
+        />
     </div>
   );
 }
