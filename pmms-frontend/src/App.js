@@ -1,18 +1,28 @@
 import { useState, useEffect } from "react";
+import { Modal, Button, Form } from "react-bootstrap";
 import "./dashboard.css";
 import 'bootstrap/dist/css/bootstrap.min.css';
-import Button from "react-bootstrap/Button";
-import Modal from "react-bootstrap/Modal";
 
 function App() {
   const [modalShow, setModalShow] = useState(false);
   const [selectedJar, setSelectedJar] = useState(null);
+  const [mode, setMode] = useState("");
+  const [amount, setAmount] = useState("");
+  const [reason, setReason] = useState("");
   const [income, setIncome] = useState("");
   const [jars, setJars] = useState(null);
   const [jarsFromDb, setJarsFromDb] = useState([]);
 
+  const resetModalState = () => {
+    setMode("");
+    setAmount("");
+    setReason("");
+  }
+
   const handleSubmit = async (e) => {
     e.preventDefault();
+  
+    if (!income || income <= 0) return alert("Enter a valid income!");
     const res = await fetch("http://localhost/personal-money-management-system/pmms-backend/api/distribute.php", {
       method: "POST",
       headers: { "Content-Type": "application/x-www-form-urlencoded" },
@@ -88,14 +98,39 @@ function App() {
   // Calculate total balance from database jars
   const totalBalance = jarsFromDb.reduce((total, jar) => total + parseFloat(jar.amount), 0);
 
+  const updateJarAmount = async () => {
+    if (!selectedJar) return;
+    if (!amount || parseFloat(amount) <= -1) return alert("Enter a valid amount!");
+
+    const res = await fetch("http://localhost/personal-money-management-system/pmms-backend/api/update_jar.php", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        jar_name: selectedJar.jar_name,
+        amount: parseFloat(amount),
+        action: mode,
+        reason
+      }),
+    });
+
+    const data = await res.json();
+    alert(data.message);
+
+    resetModalState();
+    setModalShow(false);
+    fetchJarsFromDb();
+  };
+
   function MyJarModal({ show, onHide, jar }) {
+    if (!jar) return null;
+
     return (
-      <Modal show={show} onHide={onHide} centered>
+      <Modal show={show} onHide={() => { resetModalState(); onHide(); }} centered>
         <Modal.Header closeButton>
           <Modal.Title>{jar?.jar_name || "Loading..."}</Modal.Title>
         </Modal.Header>
 
-        <Modal.Body>
+        <Modal.Body className="text-center">
           {jar ? (
             <>
               <img
@@ -109,10 +144,45 @@ function App() {
           ) : (
             <p>Loading...</p>
           )}
+
+          {mode === "" && (
+            <div className="d-flex justify-content-center gap-3 mt-4">
+              <Button variant="success" onClick={() => setMode("add")}>+ Add</Button>
+              <Button variant="danger" onClick={() => setMode("subtract")}>- Subtract</Button>
+              <Button variant="warning" onClick={() => setMode("edit")}>Edit Amount</Button>
+            </div>
+          )}
+
+          {mode !== "" && (
+            <div className="mt-4">
+              <input
+                type="number"
+                step="0.01"
+                className="form-control"
+                placeholder={`Enter amount to ${mode}`}
+                value={amount}
+                onChange={(e) => setAmount(e.target.value)}
+              />
+
+              <textarea
+                className="form-control mt-2"
+                placeholder="Reason (optional)"
+                value={reason}
+                onChange={(e) => setReason(e.target.value)}
+              />
+
+              <div className="d-flex justify-content-center gap-3 mt-3">
+                <Button variant="primary" onClick={updateJarAmount}>✅ Save</Button>
+                <Button variant="secondary" onClick={resetModalState}>Cancel</Button>
+              </div>
+            </div>
+          )}
         </Modal.Body>
 
         <Modal.Footer>
-          <Button variant="secondary" onClick={onHide}>Close</Button>
+          <Button variant="secondary" onClick={() => { resetModalState(); onHide(); }}>
+            Close
+          </Button>
         </Modal.Footer>
       </Modal>
     );
@@ -128,6 +198,7 @@ function App() {
             step="0.01" // ✅ Allow decimal numbers
             placeholder="Enter your income"
             name="income"
+            value={income}
             onChange={(e) => setIncome(e.target.value)}
           />
           <button type="submit">Distribute</button>
