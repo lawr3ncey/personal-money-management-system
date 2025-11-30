@@ -1,0 +1,95 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Custom global styles */
+@layer base {
+  body {
+    @apply bg-gradient-to-br from-gray-50 to-gray-100 font-sans;
+  }
+}
+
+@layer components {
+  /* Glassmorphic card */
+  .glass-card {
+    @apply bg-white/75 backdrop-blur-glass rounded-2xl shadow-glass;
+  }
+
+  /* Button variants */
+  .btn-primary {
+    @apply bg-primary-500 hover:bg-primary-600 text-white font-semibold py-2 px-4 rounded-xl transition-all duration-200;
+  }
+
+  .btn-secondary {
+    @apply bg-secondary-500 hover:bg-secondary-600 text-white font-semibold py-2 px-4 rounded-xl transition-all duration-200;
+  }
+
+  .btn-outline {
+    @apply border-2 border-primary-500 text-primary-500 hover:bg-primary-500 hover:text-white font-semibold py-2 px-4 rounded-xl transition-all duration-200;
+  }
+
+  /* Input fields */
+  .input-field {
+    @apply w-full px-4 py-2 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all;
+  }
+
+  /* Jar card styles */
+  .jar-card {
+    @apply glass-card p-6 cursor-pointer transform transition-all duration-300 hover:scale-105 hover:shadow-jar;
+  }
+}
+
+@layer utilities {
+  .gradient-text {
+    @apply bg-gradient-to-r from-primary-500 to-secondary-500 bg-clip-text text-transparent;
+  }
+
+  .scrollbar-hide {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+
+  .scrollbar-hide::-webkit-scrollbar {
+    display: none;
+  }
+}
+
+/* React Toastify custom styles */
+.Toastify__toast {
+  @apply rounded-2xl shadow-glass;
+}
+
+.Toastify__toast--success {
+  @apply bg-white border-l-4 border-primary-500;
+}
+
+.Toastify__toast--error {
+  @apply bg-white border-l-4 border-danger;
+}
+
+/* Loading spinner animation */
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.animate-spin {
+  animation: spin 1s linear infinite;
+}
+
+/* Fade in animation */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-fade-in {
+  animation: fadeIn 0.3s ease-out;
+}
