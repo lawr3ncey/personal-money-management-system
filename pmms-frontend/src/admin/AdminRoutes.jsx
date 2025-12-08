@@ -5,11 +5,31 @@ import { AdminProvider, useAdmin } from './context/AdminContext';
 import { getTheme } from './theme';
 import adminAuthService from './services/adminAuth.service';
 
-// Pages
+// Core Pages
 import AdminLogin from './pages/AdminLogin';
 import AdminLayout from './components/AdminLayout';
 import AdminDashboard from './pages/AdminDashboard';
 import UserManagement from './pages/UserManagement';
+import AdminTransactions from './pages/AdminTransactions';
+import AdminNotifications from './pages/AdminNotifications';
+import AdminActivityLogs from './pages/AdminActivityLogs';
+
+// Finance Pages
+import AdminJarOverview from './pages/finance/AdminJarOverview';
+import MonthlyBudgetMonitor from './pages/finance/MonthlyBudgetMonitor';
+import RecurringItemsOverview from './pages/finance/RecurringItemsOverview';
+
+// System Pages
+import BackupRestoreManager from './pages/system/BackupRestoreManager';
+import CustomCategoriesManager from './pages/system/CustomCategoriesManager';
+import SavingsGoalsMonitor from './pages/system/SavingsGoalsMonitor';
+import RecurringEngineControl from './pages/system/RecurringEngineControl';
+import SystemLogsMonitor from './pages/system/SystemLogsMonitor';
+import AdminSettings from './pages/system/AdminSettings';
+
+// Security Pages
+import SessionLogs from './pages/security/SessionLogs';
+import RoleManagement from './pages/security/RoleManagement';
 
 // Protected Route Component
 const ProtectedRoute = ({ children }) => {
@@ -54,9 +74,27 @@ const AdminRoutes = () => {
           >
             <Route path="dashboard" element={<AdminDashboard />} />
             <Route path="users" element={<UserManagement />} />
-            <Route path="transactions" element={<div>Transactions Page (Coming Soon)</div>} />
-            <Route path="notifications" element={<div>Notifications Page (Coming Soon)</div>} />
-            <Route path="logs" element={<div>Activity Logs Page (Coming Soon)</div>} />
+            <Route path="transactions" element={<AdminTransactions />} />
+            <Route path="notifications" element={<AdminNotifications />} />
+            <Route path="logs" element={<AdminActivityLogs />} />
+            
+            {/* Finance Routes */}
+            <Route path="finance/jars" element={<AdminJarOverview />} />
+            <Route path="finance/budgets" element={<MonthlyBudgetMonitor />} />
+            <Route path="finance/recurring" element={<RecurringItemsOverview />} />
+            
+            {/* System Routes */}
+            <Route path="system/backup" element={<BackupRestoreManager />} />
+            <Route path="system/categories" element={<CustomCategoriesManager />} />
+            <Route path="system/goals" element={<SavingsGoalsMonitor />} />
+            <Route path="system/engine" element={<RecurringEngineControl />} />
+            <Route path="system/logs" element={<SystemLogsMonitor />} />
+            <Route path="system/settings" element={<AdminSettings />} />
+            
+            {/* Security Routes */}
+            <Route path="security/sessions" element={<SessionLogs />} />
+            <Route path="security/roles" element={<RoleManagement />} />
+            
             <Route path="*" element={<Navigate to="/admin/dashboard" replace />} />
           </Route>
         </Routes>

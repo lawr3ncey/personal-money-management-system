@@ -30,6 +30,17 @@ import {
   Brightness7 as Brightness7Icon,
   AccountCircle,
   Logout,
+  Savings as SavingsIcon,
+  AttachMoney as MoneyIcon,
+  Repeat as RecurringIcon,
+  Backup as BackupIcon,
+  Category as CategoryIcon,
+  Flag as GoalIcon,
+  Schedule as ScheduleIcon,
+  BugReport as LogsIcon,
+  Settings as SettingsIcon,
+  VpnKey as SessionIcon,
+  Security as SecurityIcon,
 } from '@mui/icons-material';
 import { useAdmin } from '../context/AdminContext';
 import adminAuthService from '../services/adminAuth.service';
@@ -42,6 +53,20 @@ const menuItems = [
   { text: 'Transactions', icon: <AccountBalanceIcon />, path: '/admin/transactions' },
   { text: 'Notifications', icon: <NotificationsIcon />, path: '/admin/notifications' },
   { text: 'Activity Logs', icon: <HistoryIcon />, path: '/admin/logs' },
+  { divider: true, label: 'Finance' },
+  { text: 'Jar Overview', icon: <SavingsIcon />, path: '/admin/finance/jars' },
+  { text: 'Monthly Budgets', icon: <MoneyIcon />, path: '/admin/finance/budgets' },
+  { text: 'Recurring Items', icon: <RecurringIcon />, path: '/admin/finance/recurring' },
+  { divider: true, label: 'System' },
+  { text: 'Backup & Restore', icon: <BackupIcon />, path: '/admin/system/backup' },
+  { text: 'Categories', icon: <CategoryIcon />, path: '/admin/system/categories' },
+  { text: 'Savings Goals', icon: <GoalIcon />, path: '/admin/system/goals' },
+  { text: 'Recurring Engine', icon: <ScheduleIcon />, path: '/admin/system/engine' },
+  { text: 'System Logs', icon: <LogsIcon />, path: '/admin/system/logs' },
+  { text: 'Settings', icon: <SettingsIcon />, path: '/admin/system/settings' },
+  { divider: true, label: 'Security' },
+  { text: 'Session Logs', icon: <SessionIcon />, path: '/admin/security/sessions' },
+  { text: 'Role Management', icon: <SecurityIcon />, path: '/admin/security/roles' },
 ];
 
 const AdminLayout = () => {
@@ -103,35 +128,60 @@ const AdminLayout = () => {
         </Box>
       </Box>
       <Divider />
-      <List>
-        {menuItems.map((item) => (
-          <ListItem key={item.text} disablePadding>
-            <ListItemButton
-              selected={location.pathname === item.path}
-              onClick={() => handleNavigation(item.path)}
-              sx={{
-                '&.Mui-selected': {
-                  backgroundColor: 'primary.main',
-                  color: 'primary.contrastText',
-                  '&:hover': {
-                    backgroundColor: 'primary.dark',
-                  },
-                  '& .MuiListItemIcon-root': {
-                    color: 'primary.contrastText',
-                  },
-                },
-              }}
-            >
-              <ListItemIcon
+      <List sx={{ overflowY: 'auto', flex: 1 }}>
+        {menuItems.map((item, index) => (
+          item.divider ? (
+            <React.Fragment key={`divider-${index}`}>
+              <Divider sx={{ my: 1 }} />
+              <Typography
+                variant="caption"
                 sx={{
-                  color: location.pathname === item.path ? 'inherit' : 'text.secondary',
+                  px: 2,
+                  py: 0.5,
+                  color: 'text.secondary',
+                  fontWeight: 600,
+                  textTransform: 'uppercase',
+                  fontSize: '0.7rem',
+                  letterSpacing: '0.5px',
                 }}
               >
-                {item.icon}
-              </ListItemIcon>
-              <ListItemText primary={item.text} />
-            </ListItemButton>
-          </ListItem>
+                {item.label}
+              </Typography>
+            </React.Fragment>
+          ) : (
+            <ListItem key={item.text} disablePadding>
+              <ListItemButton
+                selected={location.pathname === item.path}
+                onClick={() => handleNavigation(item.path)}
+                sx={{
+                  py: 0.75,
+                  '&.Mui-selected': {
+                    backgroundColor: 'primary.main',
+                    color: 'primary.contrastText',
+                    '&:hover': {
+                      backgroundColor: 'primary.dark',
+                    },
+                    '& .MuiListItemIcon-root': {
+                      color: 'primary.contrastText',
+                    },
+                  },
+                }}
+              >
+                <ListItemIcon
+                  sx={{
+                    color: location.pathname === item.path ? 'inherit' : 'text.secondary',
+                    minWidth: 40,
+                  }}
+                >
+                  {item.icon}
+                </ListItemIcon>
+                <ListItemText 
+                  primary={item.text} 
+                  primaryTypographyProps={{ fontSize: '0.9rem' }}
+                />
+              </ListItemButton>
+            </ListItem>
+          )
         ))}
       </List>
     </Box>
