@@ -161,7 +161,7 @@ exports.deleteGoal = async (req, res, next) => {
 // @access  Private
 exports.contributeToGoal = async (req, res, next) => {
   try {
-    const { jarId, amount } = req.body;
+    const { jarId, amount, note } = req.body;
 
     const goal = await SavingsGoal.findOne({
       _id: req.params.id,
@@ -175,66 +175,68 @@ exports.contributeToGoal = async (req, res, next) => {
       });
     }
 
-    // Verify jar
-    const jar = await Jar.findOne({
-      _id: jarId,
-      userId: req.user.id
-    });
+    // If jarId is provided, verify jar and deduct from it
+    if (jarId) {
+      const jar = await Jar.findOne({
+        _id: jarId,
+        userId: req.user.id
+      });
 
-    if (!jar) {
-      return res.status(404).json({
-        status: 'error',
-        message: 'Jar not found'
+      if (!jar) {
+        return res.status(404).json({
+          status: 'error',
+          message: 'Jar not found'
+        });
+      }
+
+      // Check jar has sufficient funds
+      if (jar.amount < amount) {
+        return res.status(400).json({
+          status: 'error',
+          message: 'Insufficient funds in jar'
+        });
+      }
+
+      // Deduct from jar
+      const previousAmount = jar.amount;
+      jar.amount -= amount;
+      await jar.save();
+
+      // Create transaction
+      await Transaction.create({
+        userId: req.user.id,
+        jarId,
+        type: 'subtract',
+        amount,
+        previousAmount,
+        newAmount: jar.amount,
+        reason: `Contribution to savings goal: ${goal.name}`
       });
     }
-
-    // Check jar has sufficient funds
-    if (jar.amount < amount) {
-      return res.status(400).json({
-        status: 'error',
-        message: 'Insufficient funds in jar'
-      });
-    }
-
-    // Deduct from jar
-    const previousAmount = jar.amount;
-    jar.amount -= amount;
-    await jar.save();
 
     // Add to goal
     goal.currentAmount += amount;
     goal.contributions.push({
       amount,
-      jarId,
+      jarId: jarId || null,
+      note: note || undefined,
       date: new Date()
     });
 
     // Check if goal is completed
-    if (goal.currentAmount >= goal.targetAmount && !goal.isCompleted) {
-      goal.isCompleted = true;
+    if (goal.currentAmount >= goal.targetAmount && goal.status !== 'completed') {
+      goal.status = 'completed';
       goal.completedAt = new Date();
     }
 
     await goal.save();
 
-    // Create transaction
-    await Transaction.create({
-      userId: req.user.id,
-      jarId,
-      type: 'subtract',
-      amount,
-      previousAmount,
-      newAmount: jar.amount,
-      reason: `Contribution to savings goal: ${goal.name}`
-    });
-
     res.status(200).json({
       status: 'success',
       data: {
         goal,
-        jar,
         notification: {
-          message: goal.isCompleted 
+          message: goal.status === 'completed'
             ? `🎉 Congratulations! Goal "${goal.name}" completed!`
             : `₱${amount.toFixed(2)} contributed to ${goal.name}`,
           type: 'success'

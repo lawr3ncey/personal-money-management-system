@@ -10,7 +10,7 @@ const recurringItemSchema = new mongoose.Schema({
   jarId: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'Jar',
-    required: true
+    required: false
   },
   type: {
     type: String,
@@ -29,7 +29,7 @@ const recurringItemSchema = new mongoose.Schema({
   },
   frequency: {
     type: String,
-    enum: ['daily', 'weekly', 'monthly', 'yearly'],
+    enum: ['daily', 'weekly', 'biweekly', 'monthly', 'yearly'],
     required: true
   },
   dayOfExecution: {

@@ -9,6 +9,8 @@ const calculateNextDate = (frequency, dayOfExecution, currentDate = new Date()) 
       return addDays(currentDate, 1);
     case 'weekly':
       return addWeeks(currentDate, 1);
+    case 'biweekly':
+      return addDays(currentDate, 15);
     case 'monthly':
       const next = addMonths(currentDate, 1);
       return new Date(next.getFullYear(), next.getMonth(), dayOfExecution || 1);

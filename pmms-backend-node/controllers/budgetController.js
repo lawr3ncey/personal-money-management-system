@@ -1,6 +1,9 @@
 const Budget = require('../models/Budget');
 const Transaction = require('../models/Transaction');
+const IncomeHistory = require('../models/IncomeHistory');
+const MonthlyReport = require('../models/MonthlyReport');
 const { getMonthDateRange } = require('../utils/helpers');
+const { recalculateBudget, getActiveAlerts } = require('../services/budget.service');
 
 // @desc    Get all budgets
 // @route   GET /api/v1/budgets
@@ -43,47 +46,20 @@ exports.getCurrentBudget = async (req, res, next) => {
         year,
         monthlyIncome: 0,
         spendingLimit: 0,
-        savingsGoal: 0
+        savingsGoal: 0,
+        alerts: [
+          { threshold: 70, triggered: false },
+          { threshold: 100, triggered: false }
+        ]
       });
     }
 
-    // Calculate actual spent and saved
-    const { startDate, endDate } = getMonthDateRange(month, year);
-    
-    const transactions = await Transaction.find({
-      userId: req.user.id,
-      date: { $gte: startDate, $lte: endDate },
-      type: { $in: ['subtract', 'add'] }
-    });
+    // Recalculate actual values using budget service
+    const result = await recalculateBudget(req.user.id);
+    budget = result.budget;
 
-    let actualSpent = 0;
-    let actualSaved = 0;
-
-    transactions.forEach(t => {
-      if (t.type === 'subtract') {
-        actualSpent += t.amount;
-      } else if (t.type === 'add') {
-        actualSaved += t.amount;
-      }
-    });
-
-    budget.actualSpent = actualSpent;
-    budget.actualSaved = actualSaved;
-    await budget.save();
-
-    // Check alerts
-    if (budget.spendingLimit > 0) {
-      const spentPercentage = (actualSpent / budget.spendingLimit) * 100;
-      
-      budget.alerts.forEach(alert => {
-        if (spentPercentage >= alert.threshold && !alert.triggered) {
-          alert.triggered = true;
-          alert.triggeredAt = new Date();
-        }
-      });
-      
-      await budget.save();
-    }
+    // Get active alerts
+    const activeAlerts = await getActiveAlerts(req.user.id);
 
     res.status(200).json({
       status: 'success',
@@ -124,8 +100,7 @@ exports.createBudget = async (req, res, next) => {
         spendingLimit,
         savingsGoal,
         alerts: alerts || [
-          { threshold: 50, triggered: false },
-          { threshold: 80, triggered: false },
+          { threshold: 70, triggered: false },
           { threshold: 100, triggered: false }
         ]
       });
@@ -165,10 +140,24 @@ exports.getBudgetProgress = async (req, res, next) => {
       ? (budget.actualSaved / budget.savingsGoal) * 100 
       : 0;
 
+    // Calculate actual income for this month
+    const { startDate, endDate } = getMonthDateRange(budget.month, budget.year);
+    const incomeRecords = await IncomeHistory.find({
+      userId: req.user.id,
+      distributedAt: { $gte: startDate, $lte: endDate }
+    });
+
+    let actualIncome = 0;
+    incomeRecords.forEach(record => {
+      actualIncome += record.amount;
+    });
+
     res.status(200).json({
       status: 'success',
       data: {
-        budget,
+        actualIncome,
+        actualSpending: budget.actualSpent,
+        actualSavings: budget.actualSaved,
         progress: {
           spentPercentage: Math.round(spentPercentage),
           savedPercentage: Math.round(savedPercentage),
@@ -176,6 +165,43 @@ exports.getBudgetProgress = async (req, res, next) => {
           remainingToSave: Math.max(0, budget.savingsGoal - budget.actualSaved)
         }
       }
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+// @desc    Get budget alerts
+// @route   GET /api/v1/budgets/alerts
+// @access  Private
+exports.getBudgetAlerts = async (req, res, next) => {
+  try {
+    const alerts = await getActiveAlerts(req.user.id);
+    
+    res.status(200).json({
+      status: 'success',
+      data: { alerts }
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+// @desc    Get monthly reports (history)
+// @route   GET /api/v1/budgets/reports
+// @access  Private
+exports.getMonthlyReports = async (req, res, next) => {
+  try {
+    const { limit = 12 } = req.query;
+    
+    const reports = await MonthlyReport.find({ userId: req.user.id })
+      .sort({ year: -1, month: -1 })
+      .limit(parseInt(limit));
+
+    res.status(200).json({
+      status: 'success',
+      results: reports.length,
+      data: { reports }
     });
   } catch (error) {
     next(error);

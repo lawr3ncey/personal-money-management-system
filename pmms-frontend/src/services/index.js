@@ -74,7 +74,7 @@ export const budgetService = {
 
   getCurrentBudget: async () => {
     const response = await api.get('/budgets/current');
-    return response.data.data.budget;
+    return response.data.data;
   },
 
   createBudget: async (budgetData) => {
@@ -85,6 +85,16 @@ export const budgetService = {
   getBudgetProgress: async (id) => {
     const response = await api.get(`/budgets/${id}/progress`);
     return response.data.data;
+  },
+
+  getBudgetAlerts: async () => {
+    const response = await api.get('/budgets/alerts');
+    return response.data.data.alerts;
+  },
+
+  getMonthlyReports: async (limit = 12) => {
+    const response = await api.get('/budgets/reports', { params: { limit } });
+    return response.data.data.reports;
   }
 };
 
@@ -168,13 +178,16 @@ export const exportService = {
     return response.data;
   },
 
-  importData: async (data) => {
-    const response = await api.post('/export/import', { data });
-    return response.data;
+  importData: async ({ data, replaceExisting = true }) => {
+    const response = await api.post('/export/import', {
+      data: data.data,
+      replaceExisting
+    });
+    return response.data.data;
   },
 
   resetData: async (confirm) => {
     const response = await api.post('/export/reset', { confirm });
-    return response.data;
+    return response.data.data;
   }
 };

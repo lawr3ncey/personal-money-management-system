@@ -10,10 +10,11 @@ const {
   getGoalProgress
 } = require('../controllers/goalController');
 const { protect } = require('../middleware/auth');
+const mockUser = require('../middleware/mockUser');
 const { createGoalValidator } = require('../utils/validators');
 const { validate } = require('../middleware/validate');
 
-router.use(protect);
+router.use(mockUser); // Dev only - remove in production
 
 router.route('/')
   .get(getGoals)

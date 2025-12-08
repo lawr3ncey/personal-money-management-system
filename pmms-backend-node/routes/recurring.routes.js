@@ -8,10 +8,12 @@ const {
   toggleRecurringItem
 } = require('../controllers/recurringController');
 const { protect } = require('../middleware/auth');
+const mockUser = require('../middleware/mockUser');
 const { createRecurringValidator } = require('../utils/validators');
 const { validate } = require('../middleware/validate');
 
-router.use(protect);
+// Use mockUser for development
+router.use(mockUser); // Dev only - remove in production
 
 router.route('/')
   .get(getRecurringItems)

@@ -28,7 +28,7 @@ exports.distributeIncomeValidator = [
 exports.createRecurringValidator = [
   body('name').trim().notEmpty().withMessage('Name is required'),
   body('amount').isFloat({ gt: 0 }).withMessage('Amount must be greater than 0'),
-  body('frequency').isIn(['daily', 'weekly', 'monthly', 'yearly']).withMessage('Invalid frequency')
+  body('frequency').isIn(['daily', 'weekly', 'biweekly', 'monthly', 'yearly']).withMessage('Invalid frequency')
 ];
 
 exports.createGoalValidator = [

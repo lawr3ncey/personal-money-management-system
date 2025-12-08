@@ -48,13 +48,15 @@ exports.createRecurringItem = async (req, res, next) => {
   try {
     const { jarId, type, name, amount, frequency, dayOfExecution } = req.body;
 
-    // Verify jar exists
-    const jar = await Jar.findOne({ _id: jarId, userId: req.user.id });
-    if (!jar) {
-      return res.status(404).json({
-        status: 'error',
-        message: 'Jar not found'
-      });
+    // Verify jar exists if jarId is provided
+    if (jarId) {
+      const jar = await Jar.findOne({ _id: jarId, userId: req.user.id });
+      if (!jar) {
+        return res.status(404).json({
+          status: 'error',
+          message: 'Jar not found'
+        });
+      }
     }
 
     const nextExecutionDate = calculateNextDate(frequency, dayOfExecution);

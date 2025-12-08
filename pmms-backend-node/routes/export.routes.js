@@ -7,8 +7,10 @@ const {
   resetData
 } = require('../controllers/exportController');
 const { protect } = require('../middleware/auth');
+const mockUser = require('../middleware/mockUser');
 
-router.use(protect);
+// Use mockUser for development
+router.use(mockUser); // Dev only - replace with protect in production
 
 router.get('/csv', exportCSV);
 router.get('/json', exportJSON);

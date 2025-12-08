@@ -1,5 +1,6 @@
 const Jar = require('../models/Jar');
 const Transaction = require('../models/Transaction');
+const { updateBudgetSpending, updateBudgetSavings } = require('../services/budget.service');
 
 // @desc    Get all jars for user
 // @route   GET /api/v1/jars
@@ -203,6 +204,13 @@ exports.adjustJar = async (req, res, next) => {
         newAmount = previousAmount - amount;
         break;
       case 'edit':
+        // Allow editing to any non-negative amount including 0
+        if (amount < 0) {
+          return res.status(400).json({
+            status: 'error',
+            message: 'Amount cannot be negative'
+          });
+        }
         newAmount = amount;
         break;
       default:
@@ -227,6 +235,20 @@ exports.adjustJar = async (req, res, next) => {
       reason,
       category
     });
+
+    // Update budget tracking in real-time
+    try {
+      if (type === 'subtract') {
+        // Count as spending
+        await updateBudgetSpending(req.user.id, amount);
+      } else if (type === 'add') {
+        // Count as savings
+        await updateBudgetSavings(req.user.id, amount);
+      }
+    } catch (budgetError) {
+      console.error('Budget update error:', budgetError);
+      // Don't fail the transaction if budget update fails
+    }
 
     res.status(200).json({
       status: 'success',

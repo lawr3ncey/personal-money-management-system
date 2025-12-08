@@ -27,6 +27,6 @@ export const DEFAULT_JARS = [
   { name: 'Give', percentage: 5, color: '#af52de' }
 ];
 
-export const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:5000/api/v1';
+export const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:5001/api/v1';
 
 export const PAGINATION_LIMIT = 20;

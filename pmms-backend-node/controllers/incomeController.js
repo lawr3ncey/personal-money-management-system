@@ -3,6 +3,7 @@ const Transaction = require('../models/Transaction');
 const IncomeHistory = require('../models/IncomeHistory');
 const { calculatePercentage } = require('../utils/helpers');
 const { DEFAULT_JARS } = require('../utils/constants');
+const { recalculateBudget } = require('../services/budget.service');
 
 // @desc    Distribute income across jars
 // @route   POST /api/v1/income/distribute
@@ -75,6 +76,14 @@ exports.distributeIncome = async (req, res, next) => {
       source,
       distribution
     });
+
+    // Recalculate budget to include new income
+    try {
+      await recalculateBudget(req.user.id);
+    } catch (budgetError) {
+      console.error('Budget recalculation error:', budgetError);
+      // Don't fail income distribution if budget update fails
+    }
 
     res.status(200).json({
       status: 'success',

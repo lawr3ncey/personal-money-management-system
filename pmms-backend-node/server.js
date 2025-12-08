@@ -25,6 +25,7 @@ const errorHandler = require('./middleware/errorHandler');
 
 // Import services
 const recurringService = require('./services/recurring.service');
+const budgetService = require('./services/budget.service');
 
 // Initialize Express app
 const app = express();
@@ -32,11 +33,12 @@ const app = express();
 // Security middleware
 app.use(helmet());
 
-// CORS configuration - Allow both port 3000 and 3001
+// CORS configuration - Allow all local dev ports
 app.use(cors({
   origin: [
     'http://localhost:3000',
     'http://localhost:3001',
+    'http://localhost:3002',
     process.env.CLIENT_URL
   ].filter(Boolean),
   credentials: true,
@@ -87,33 +89,42 @@ app.use(errorHandler);
 // MongoDB connection
 mongoose.connect(process.env.MONGODB_URI)
 .then(() => {
-  console.log('✅ MongoDB connected successfully');
+  console.log('[OK] MongoDB connected successfully');
   
   // Start cron jobs for recurring items
   if (process.env.ENABLE_RECURRING_JOBS === 'true') {
-    // Run every day at midnight
+    // Run recurring items every day at midnight
     cron.schedule('0 0 * * *', () => {
-      console.log('🔄 Running recurring items cron job...');
+      console.log('[CRON] Running recurring items cron job...');
       recurringService.executeRecurringItems();
     });
-    console.log('✅ Recurring items cron job scheduled');
+    console.log('[OK] Recurring items cron job scheduled');
+    
+    // Run monthly budget reset on 1st of each month at 00:01
+    cron.schedule('1 0 1 * *', () => {
+      console.log('[CRON] Running monthly budget reset...');
+      budgetService.resetMonthlyBudget();
+    });
+    console.log('[OK] Monthly budget reset cron job scheduled');
   }
 })
 .catch((err) => {
-  console.error('❌ MongoDB connection error:', err);
+  console.error('[ERROR] MongoDB connection error:', err);
   process.exit(1);
 });
 
 // Start server
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => {
-  console.log(`🚀 Server running on port ${PORT} in ${process.env.NODE_ENV} mode`);
+  console.log(`[SERVER] Server running on port ${PORT} in ${process.env.NODE_ENV} mode`);
 });
 
 // Handle unhandled promise rejections
 process.on('unhandledRejection', (err) => {
-  console.error('❌ Unhandled Promise Rejection:', err);
+  console.error('[ERROR] Unhandled Promise Rejection:', err);
   process.exit(1);
 });
 
 module.exports = app;
+
+
