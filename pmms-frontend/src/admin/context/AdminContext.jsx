@@ -25,10 +25,10 @@ export const AdminProvider = ({ children }) => {
   const [transactions, setTransactions] = useState([...dummyTransactions]);
   const [notifications, setNotifications] = useState([...dummyNotifications]);
   const [activityLogs, setActivityLogs] = useState([...dummyActivityLogs]);
-  const [analytics, setAnalytics] = useState(null);
+  const [analytics, setAnalytics] = useState(() => getAnalyticsData()); // Initialize immediately
   const [loading, setLoading] = useState(false);
 
-  // Load analytics on mount
+  // Update analytics when users or transactions change
   useEffect(() => {
     setAnalytics(getAnalyticsData());
   }, [users, transactions]);

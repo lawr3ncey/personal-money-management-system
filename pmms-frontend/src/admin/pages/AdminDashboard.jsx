@@ -74,15 +74,9 @@ const StatCard = ({ title, value, icon, color, subtitle }) => (
 
 const AdminDashboard = () => {
   const { analytics, activityLogs } = useAdmin();
-  const [stats, setStats] = useState(null);
 
-  useEffect(() => {
-    if (analytics) {
-      setStats(analytics);
-    }
-  }, [analytics]);
-
-  if (!stats) {
+  // Use analytics directly without extra state
+  if (!analytics || !analytics.userMetrics) {
     return (
       <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '60vh' }}>
         <Typography>Loading analytics...</Typography>
@@ -109,16 +103,16 @@ const AdminDashboard = () => {
         <Grid item xs={12} sm={6} md={3}>
           <StatCard
             title="Total Users"
-            value={stats.userMetrics.totalUsers}
+            value={analytics.userMetrics.totalUsers}
             icon={<PeopleIcon />}
             color="primary"
-            subtitle={`${stats.userMetrics.activeUsers} active`}
+            subtitle={`${analytics.userMetrics.activeUsers} active`}
           />
         </Grid>
         <Grid item xs={12} sm={6} md={3}>
           <StatCard
             title="Total Balance"
-            value={formatCurrency(stats.financialMetrics.totalBalance)}
+            value={formatCurrency(analytics.financialMetrics.totalBalance)}
             icon={<AccountBalanceIcon />}
             color="success"
           />
@@ -126,7 +120,7 @@ const AdminDashboard = () => {
         <Grid item xs={12} sm={6} md={3}>
           <StatCard
             title="Total Income"
-            value={formatCurrency(stats.financialMetrics.totalIncome)}
+            value={formatCurrency(analytics.financialMetrics.totalIncome)}
             icon={<LocalAtmIcon />}
             color="info"
           />
@@ -134,7 +128,7 @@ const AdminDashboard = () => {
         <Grid item xs={12} sm={6} md={3}>
           <StatCard
             title="Transactions"
-            value={stats.financialMetrics.totalTransactions}
+            value={analytics.financialMetrics.totalTransactions}
             icon={<TrendingUpIcon />}
             color="warning"
             subtitle="All time"
@@ -147,7 +141,7 @@ const AdminDashboard = () => {
         <Grid item xs={6} sm={3}>
           <Paper sx={{ p: 2, textAlign: 'center' }}>
             <Typography variant="h6" sx={{ fontWeight: 700, color: 'success.main' }}>
-              {stats.userMetrics.newUsersToday}
+              {analytics.userMetrics.newUsersToday}
             </Typography>
             <Typography variant="caption" color="text.secondary">
               New Today
@@ -157,7 +151,7 @@ const AdminDashboard = () => {
         <Grid item xs={6} sm={3}>
           <Paper sx={{ p: 2, textAlign: 'center' }}>
             <Typography variant="h6" sx={{ fontWeight: 700, color: 'info.main' }}>
-              {stats.userMetrics.newUsersThisWeek}
+              {analytics.userMetrics.newUsersThisWeek}
             </Typography>
             <Typography variant="caption" color="text.secondary">
               New This Week
@@ -167,7 +161,7 @@ const AdminDashboard = () => {
         <Grid item xs={6} sm={3}>
           <Paper sx={{ p: 2, textAlign: 'center' }}>
             <Typography variant="h6" sx={{ fontWeight: 700, color: 'warning.main' }}>
-              {stats.userMetrics.inactiveUsers}
+              {analytics.userMetrics.inactiveUsers}
             </Typography>
             <Typography variant="caption" color="text.secondary">
               Inactive
@@ -177,7 +171,7 @@ const AdminDashboard = () => {
         <Grid item xs={6} sm={3}>
           <Paper sx={{ p: 2, textAlign: 'center' }}>
             <Typography variant="h6" sx={{ fontWeight: 700, color: 'error.main' }}>
-              {stats.userMetrics.suspendedUsers}
+              {analytics.userMetrics.suspendedUsers}
             </Typography>
             <Typography variant="caption" color="text.secondary">
               Suspended
@@ -195,7 +189,7 @@ const AdminDashboard = () => {
               User Growth (Last 6 Months)
             </Typography>
             <ResponsiveContainer width="100%" height={300}>
-              <LineChart data={stats.userGrowthData}>
+              <LineChart data={analytics.userGrowthData}>
                 <CartesianGrid strokeDasharray="3 3" />
                 <XAxis dataKey="month" />
                 <YAxis />
@@ -222,7 +216,7 @@ const AdminDashboard = () => {
             <ResponsiveContainer width="100%" height={300}>
               <PieChart>
                 <Pie
-                  data={stats.mostUsedJars}
+                  data={analytics.mostUsedJars}
                   cx="50%"
                   cy="50%"
                   labelLine={false}
@@ -231,7 +225,7 @@ const AdminDashboard = () => {
                   fill="#8884d8"
                   dataKey="count"
                 >
-                  {stats.mostUsedJars.map((entry, index) => (
+                  {analytics.mostUsedJars.map((entry, index) => (
                     <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
                   ))}
                 </Pie>
@@ -248,7 +242,7 @@ const AdminDashboard = () => {
               Transaction Volume (Last 7 Days)
             </Typography>
             <ResponsiveContainer width="100%" height={300}>
-              <BarChart data={stats.transactionVolumeData}>
+              <BarChart data={analytics.transactionVolumeData}>
                 <CartesianGrid strokeDasharray="3 3" />
                 <XAxis dataKey="day" />
                 <YAxis yAxisId="left" orientation="left" stroke="#7c3aed" />

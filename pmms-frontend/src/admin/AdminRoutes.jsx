@@ -40,12 +40,12 @@ const AdminRoutes = () => {
     <AdminProvider>
       <AdminThemeWrapper>
         <Routes>
-          {/* Login Route */}
-          <Route path="/admin" element={<AdminLogin />} />
+          {/* Login Route - matches /admin exactly */}
+          <Route index element={<AdminLogin />} />
 
           {/* Protected Admin Routes */}
           <Route
-            path="/admin/*"
+            path="/*"
             element={
               <ProtectedRoute>
                 <AdminLayout />
