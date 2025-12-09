@@ -7,7 +7,7 @@ import adminAuthService from './services/adminAuth.service';
 
 // Core Pages
 import AdminLogin from './pages/AdminLogin';
-import AdminLayout from './components/AdminLayout';
+import AdminLayout from './components/AdminLayoutAnimated';
 import AdminDashboard from './pages/AdminDashboard';
 import UserManagement from './pages/UserManagement';
 import AdminTransactions from './pages/AdminTransactions';

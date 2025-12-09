@@ -93,13 +93,13 @@ const AdminDashboard = () => {
   };
 
   return (
-    <Box>
+    <Box sx={{ width: '100%', maxWidth: '100%' }}>
       <Typography variant="h4" sx={{ mb: 3, fontWeight: 700 }}>
         Dashboard Overview
       </Typography>
 
       {/* Stats Cards */}
-      <Grid container spacing={3} sx={{ mb: 4 }}>
+      <Grid container spacing={3} sx={{ mb: 4, width: '100%' }}>
         <Grid item xs={12} sm={6} md={3}>
           <StatCard
             title="Total Users"
@@ -137,7 +137,7 @@ const AdminDashboard = () => {
       </Grid>
 
       {/* User Stats Mini Cards */}
-      <Grid container spacing={2} sx={{ mb: 4 }}>
+      <Grid container spacing={2} sx={{ mb: 4, width: '100%' }}>
         <Grid item xs={6} sm={3}>
           <Paper sx={{ p: 2, textAlign: 'center' }}>
             <Typography variant="h6" sx={{ fontWeight: 700, color: 'success.main' }}>
@@ -181,7 +181,7 @@ const AdminDashboard = () => {
       </Grid>
 
       {/* Charts */}
-      <Grid container spacing={3} sx={{ mb: 4 }}>
+      <Grid container spacing={3} sx={{ mb: 4, width: '100%' }}>
         {/* User Growth Chart */}
         <Grid item xs={12} md={8}>
           <Paper sx={{ p: 3 }}>
