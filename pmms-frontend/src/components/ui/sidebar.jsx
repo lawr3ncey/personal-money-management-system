@@ -92,6 +92,10 @@ export const DesktopSidebar = ({
         paddingLeft: animate ? (open ? "16px" : "8px") : "16px",
         paddingRight: animate ? (open ? "16px" : "8px") : "16px",
       }}
+      style={{
+        overflowY: open ? "auto" : "hidden",
+        overflowX: "hidden",
+      }}
       onMouseEnter={() => setOpen(true)}
       onMouseLeave={() => setOpen(false)}
       {...props}

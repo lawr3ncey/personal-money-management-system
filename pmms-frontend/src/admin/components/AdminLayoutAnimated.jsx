@@ -209,7 +209,7 @@ const AdminLayoutAnimated = () => {
       {/* Animated Sidebar */}
       <Sidebar open={sidebarOpen} setOpen={setSidebarOpen}>
         <SidebarBody className="justify-between gap-10">
-          <div className="flex flex-col flex-1 overflow-y-auto overflow-x-hidden">
+          <div className={`flex flex-col flex-1 overflow-x-hidden ${sidebarOpen ? 'overflow-y-auto' : 'overflow-y-hidden'}`}>
             {/* Logo - Sticky */}
             <div className="sticky top-0 bg-neutral-100 dark:bg-neutral-800 z-10 pb-4">
               {sidebarOpen ? <Logo darkMode={darkMode} /> : <LogoIcon />}
@@ -380,18 +380,13 @@ const AdminLayoutAnimated = () => {
         </AppBar>
 
         {/* Page Content - All existing admin pages render here */}
-        <Box
-          sx={{
-            flex: 1,
-            width: '100%',
-            overflowX: 'hidden',
-            overflowY: 'auto',
-            bgcolor: darkMode ? 'rgb(23, 23, 23)' : 'rgb(249, 250, 251)',
-            p: 3,
-          }}
+        <div 
+          className={`flex-1 overflow-auto p-6 ${
+            darkMode ? 'bg-neutral-900' : 'bg-gray-50'
+          }`}
         >
           <Outlet />
-        </Box>
+        </div>
       </div>
     </div>
   );

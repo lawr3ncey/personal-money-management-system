@@ -338,16 +338,14 @@ export const getAnalyticsData = () => {
   const totalBalance = dummyUsers.reduce((sum, u) => sum + u.totalBalance, 0);
   const totalIncome = dummyUsers.reduce((sum, u) => sum + u.totalIncome, 0);
 
-  // User growth chart data (last 6 months)
+  // User growth chart data (last 6 months) - with realistic growth visualization
   const userGrowthData = [];
+  const baseUsers = 45; // Starting user count 6 months ago
+  const growthPattern = [45, 142, 95, 68, 267, 198]; // Realistic growth pattern
   for (let i = 5; i >= 0; i--) {
     const date = new Date(thisYear, thisMonth - i, 1);
     const month = date.toLocaleString('default', { month: 'short' });
-    const count = dummyUsers.filter(u => {
-      const created = new Date(u.createdAt);
-      return created <= date;
-    }).length;
-    userGrowthData.push({ month, users: count });
+    userGrowthData.push({ month, users: growthPattern[5 - i] });
   }
 
   // Transaction volume data (last 7 days)

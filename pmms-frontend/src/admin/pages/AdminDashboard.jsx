@@ -93,97 +93,125 @@ const AdminDashboard = () => {
   };
 
   return (
-    <Box sx={{ width: '100%', maxWidth: '100%' }}>
-      <Typography variant="h4" sx={{ mb: 3, fontWeight: 700 }}>
-        Dashboard Overview
-      </Typography>
+    <Box sx={{ p: 3 }}>
+      {/* Header */}
+      <Box sx={{ mb: 3 }}>
+        <Typography variant="h4" sx={{ fontWeight: 700, mb: 1 }}>
+          Dashboard Overview
+        </Typography>
+        <Typography variant="body2" color="text.secondary">
+          Monitor key metrics and system performance
+        </Typography>
+      </Box>
 
       {/* Stats Cards */}
-      <Grid container spacing={3} sx={{ mb: 4, width: '100%' }}>
-        <Grid item xs={12} sm={6} md={3}>
-          <StatCard
-            title="Total Users"
-            value={analytics.userMetrics.totalUsers}
-            icon={<PeopleIcon />}
-            color="primary"
-            subtitle={`${analytics.userMetrics.activeUsers} active`}
-          />
-        </Grid>
-        <Grid item xs={12} sm={6} md={3}>
-          <StatCard
-            title="Total Balance"
-            value={formatCurrency(analytics.financialMetrics.totalBalance)}
-            icon={<AccountBalanceIcon />}
-            color="success"
-          />
-        </Grid>
-        <Grid item xs={12} sm={6} md={3}>
-          <StatCard
-            title="Total Income"
-            value={formatCurrency(analytics.financialMetrics.totalIncome)}
-            icon={<LocalAtmIcon />}
-            color="info"
-          />
-        </Grid>
-        <Grid item xs={12} sm={6} md={3}>
-          <StatCard
-            title="Transactions"
-            value={analytics.financialMetrics.totalTransactions}
-            icon={<TrendingUpIcon />}
-            color="warning"
-            subtitle="All time"
-          />
-        </Grid>
-      </Grid>
+      <Box sx={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: 2, mb: 3 }}>
+        <Paper sx={{ p: 2, bgcolor: '#e3f2fd' }}>
+          <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+            <PeopleIcon sx={{ color: '#1976d2' }} />
+            <Box>
+              <Typography variant="body2" color="text.secondary">
+                Total Users
+              </Typography>
+              <Typography variant="h5" sx={{ fontWeight: 700 }}>
+                {analytics.userMetrics.totalUsers}
+              </Typography>
+              <Typography variant="caption" color="text.secondary">
+                {analytics.userMetrics.activeUsers} active
+              </Typography>
+            </Box>
+          </Box>
+        </Paper>
+
+        <Paper sx={{ p: 2, bgcolor: '#e8f5e9' }}>
+          <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+            <AccountBalanceIcon sx={{ color: '#2e7d32' }} />
+            <Box>
+              <Typography variant="body2" color="text.secondary">
+                Total Balance
+              </Typography>
+              <Typography variant="h5" sx={{ fontWeight: 700 }}>
+                {formatCurrency(analytics.financialMetrics.totalBalance)}
+              </Typography>
+            </Box>
+          </Box>
+        </Paper>
+
+        <Paper sx={{ p: 2, bgcolor: '#e3f2fd' }}>
+          <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+            <LocalAtmIcon sx={{ color: '#1976d2' }} />
+            <Box>
+              <Typography variant="body2" color="text.secondary">
+                Total Income
+              </Typography>
+              <Typography variant="h5" sx={{ fontWeight: 700 }}>
+                {formatCurrency(analytics.financialMetrics.totalIncome)}
+              </Typography>
+            </Box>
+          </Box>
+        </Paper>
+
+        <Paper sx={{ p: 2, bgcolor: '#fff3e0' }}>
+          <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+            <TrendingUpIcon sx={{ color: '#ed6c02' }} />
+            <Box>
+              <Typography variant="body2" color="text.secondary">
+                Transactions
+              </Typography>
+              <Typography variant="h5" sx={{ fontWeight: 700 }}>
+                {analytics.financialMetrics.totalTransactions}
+              </Typography>
+              <Typography variant="caption" color="text.secondary">
+                All time
+              </Typography>
+            </Box>
+          </Box>
+        </Paper>
+      </Box>
 
       {/* User Stats Mini Cards */}
-      <Grid container spacing={2} sx={{ mb: 4, width: '100%' }}>
-        <Grid item xs={6} sm={3}>
-          <Paper sx={{ p: 2, textAlign: 'center' }}>
-            <Typography variant="h6" sx={{ fontWeight: 700, color: 'success.main' }}>
-              {analytics.userMetrics.newUsersToday}
-            </Typography>
-            <Typography variant="caption" color="text.secondary">
-              New Today
-            </Typography>
-          </Paper>
-        </Grid>
-        <Grid item xs={6} sm={3}>
-          <Paper sx={{ p: 2, textAlign: 'center' }}>
-            <Typography variant="h6" sx={{ fontWeight: 700, color: 'info.main' }}>
-              {analytics.userMetrics.newUsersThisWeek}
-            </Typography>
-            <Typography variant="caption" color="text.secondary">
-              New This Week
-            </Typography>
-          </Paper>
-        </Grid>
-        <Grid item xs={6} sm={3}>
-          <Paper sx={{ p: 2, textAlign: 'center' }}>
-            <Typography variant="h6" sx={{ fontWeight: 700, color: 'warning.main' }}>
-              {analytics.userMetrics.inactiveUsers}
-            </Typography>
-            <Typography variant="caption" color="text.secondary">
-              Inactive
-            </Typography>
-          </Paper>
-        </Grid>
-        <Grid item xs={6} sm={3}>
-          <Paper sx={{ p: 2, textAlign: 'center' }}>
-            <Typography variant="h6" sx={{ fontWeight: 700, color: 'error.main' }}>
-              {analytics.userMetrics.suspendedUsers}
-            </Typography>
-            <Typography variant="caption" color="text.secondary">
-              Suspended
-            </Typography>
-          </Paper>
-        </Grid>
-      </Grid>
+      <Box sx={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(150px, 1fr))', gap: 2, mb: 3 }}>
+        <Paper sx={{ p: 2, bgcolor: '#e8f5e9', textAlign: 'center' }}>
+          <Typography variant="h5" sx={{ fontWeight: 700, color: '#2e7d32' }}>
+            {analytics.userMetrics.newUsersToday}
+          </Typography>
+          <Typography variant="body2" color="text.secondary">
+            New Today
+          </Typography>
+        </Paper>
+
+        <Paper sx={{ p: 2, bgcolor: '#e3f2fd', textAlign: 'center' }}>
+          <Typography variant="h5" sx={{ fontWeight: 700, color: '#1976d2' }}>
+            {analytics.userMetrics.newUsersThisWeek}
+          </Typography>
+          <Typography variant="body2" color="text.secondary">
+            New This Week
+          </Typography>
+        </Paper>
+
+        <Paper sx={{ p: 2, bgcolor: '#fff3e0', textAlign: 'center' }}>
+          <Typography variant="h5" sx={{ fontWeight: 700, color: '#ed6c02' }}>
+            {analytics.userMetrics.inactiveUsers}
+          </Typography>
+          <Typography variant="body2" color="text.secondary">
+            Inactive
+          </Typography>
+        </Paper>
+
+        <Paper sx={{ p: 2, bgcolor: '#ffebee', textAlign: 'center' }}>
+          <Typography variant="h5" sx={{ fontWeight: 700, color: '#d32f2f' }}>
+            {analytics.userMetrics.suspendedUsers}
+          </Typography>
+          <Typography variant="body2" color="text.secondary">
+            Suspended
+          </Typography>
+        </Paper>
+      </Box>
 
       {/* Charts */}
-      <Grid container spacing={3} sx={{ mb: 4, width: '100%' }}>
+      <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', lg: '2fr 1fr' }, gap: 2, mb: 3 }}>
         {/* User Growth Chart */}
-        <Grid item xs={12} md={8}>
+        <Box>
           <Paper sx={{ p: 3 }}>
             <Typography variant="h6" sx={{ mb: 2, fontWeight: 600 }}>
               User Growth (Last 6 Months)
@@ -205,10 +233,10 @@ const AdminDashboard = () => {
               </LineChart>
             </ResponsiveContainer>
           </Paper>
-        </Grid>
+        </Box>
 
         {/* Most Used Jars */}
-        <Grid item xs={12} md={4}>
+        <Box>
           <Paper sx={{ p: 3 }}>
             <Typography variant="h6" sx={{ mb: 2, fontWeight: 600 }}>
               Most Used Jars
@@ -233,10 +261,11 @@ const AdminDashboard = () => {
               </PieChart>
             </ResponsiveContainer>
           </Paper>
-        </Grid>
+        </Box>
+      </Box>
 
-        {/* Transaction Volume */}
-        <Grid item xs={12}>
+      {/* Transaction Volume */}
+      <Box sx={{ mb: 3 }}>
           <Paper sx={{ p: 3 }}>
             <Typography variant="h6" sx={{ mb: 2, fontWeight: 600 }}>
               Transaction Volume (Last 7 Days)
@@ -264,8 +293,7 @@ const AdminDashboard = () => {
               </BarChart>
             </ResponsiveContainer>
           </Paper>
-        </Grid>
-      </Grid>
+      </Box>
 
       {/* Recent Activity */}
       <Paper sx={{ p: 3 }}>
